@@ -1,0 +1,179 @@
+---
+openapi: 3.0.0
+info:
+  title: Movies API
+  description: Simple movies api
+  contact:
+    email: banaszkiewicz.sebastian@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0-oas3
+servers:
+- url: /
+paths:
+  /movies:
+    get:
+      summary: searches inventory
+      description: |
+        Gets all the movies for authorized user
+      operationId: getMovies
+      responses:
+        "200":
+          description: search results an array of movies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+        "401":
+          description: Unauthorized
+      security:
+      - BearerAuth: []
+    post:
+      summary: adds a movie to user's account
+      description: Adds a movie to user's account
+      operationId: addMovie
+      requestBody:
+        description: Name of the title to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieTitle'
+        required: true
+      responses:
+        "201":
+          description: item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicPlanLimitExceeded'
+      security:
+      - BearerAuth: []
+  /auth:
+    post:
+      summary: authorization service
+      description: Allows the user to obtain token for accessing the api
+      operationId: authorization
+      requestBody:
+        description: Authorization data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationBody'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationPayloadError'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationCredentialsError'
+components:
+  schemas:
+    BasicPlanLimitExceeded:
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          type: string
+          enum:
+          - Limit of 5 created movies reached for this month.
+    Token:
+      required:
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+          description: token to access the api
+    AuthorizationPayloadError:
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          type: string
+          enum:
+          - invalid payload
+    AuthorizationCredentialsError:
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          type: string
+          enum:
+          - invalid username or password
+    AuthorizationBody:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          maxLength: 30
+          minLength: 1
+          type: string
+          example: my_username
+        password:
+          maxLength: 30
+          minLength: 1
+          type: string
+          example: my_super_secret_password
+    Movie:
+      required:
+      - director
+      - genre
+      - released
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          example: Pulp Fiction
+        released:
+          type: string
+          format: date
+          example: 1994-10-14
+        genre:
+          type: string
+          example: Crime, Drama
+        director:
+          type: string
+          example: Quentin Tarantino
+    MovieTitle:
+      required:
+      - title
+      properties:
+        title:
+          type: string
+          example: Pulp Fiction
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer

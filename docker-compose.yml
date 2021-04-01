@@ -1,0 +1,29 @@
+version: "3.2"
+services:
+  app:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+    - db
+    ports:
+    - published: ${APP_PORT:-3000}
+      target: 3000
+    volumes:
+      - .:/app/
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      API_KEY: ${API_KEY}
+      APP_PORT: ${APP_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB: ${DB}
+      NODE_ENV: development
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
