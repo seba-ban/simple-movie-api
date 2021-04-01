@@ -5,7 +5,7 @@ const saltRounds = 10;
 /**
  * Hashes a password
  * @param password 
- * @returns 
+ * @returns hashed password
  */
 const createHash = (password: string): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -20,7 +20,7 @@ const createHash = (password: string): Promise<string> =>
  * Compares a password against a hash
  * @param password 
  * @param hash 
- * @returns 
+ * @returns Boolean indicating if password matches the hash
  */
 const compare = (password: string, hash: string): Promise<boolean> =>
   new Promise((resolve, reject) => {

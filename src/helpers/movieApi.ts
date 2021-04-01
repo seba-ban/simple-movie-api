@@ -12,9 +12,9 @@ interface MovieObjectRes {
 }
 
 /**
- * Function to fetch the data about a movie
+ * Function to fetch movie data from `omdbapi`
  * @param title - Movie title to search for
- * @returns 
+ * @returns a movie object or null if there was an error calling the API
  */
 const fetchMovieDetails = async (title: string) => {
   try {

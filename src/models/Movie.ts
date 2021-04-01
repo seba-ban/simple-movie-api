@@ -10,10 +10,19 @@ interface MovieInterface {
 }
 
 class Movie extends Model {
+  /**
+   * Just added quickly to have Typescript support for available keys...
+   * @param key
+   * @returns underlying data for the key
+   */
   getKey<K extends keyof MovieInterface>(key: K): MovieInterface[K] {
     return super.getDataValue(key);
   }
 
+  /**
+   * A helper function which picks only the data we need from the object
+   * @returns MovieInterface
+   */
   extractInterfaceKeys(): MovieInterface {
     return {
       title: this.getKey('title'),

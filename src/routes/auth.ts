@@ -15,7 +15,7 @@ const router = express.Router();
 router.use(express.json());
 
 /**
- * Returns a middleware to check the body
+ * Returns a middleware to check the body object
  * @returns
  */
 const checkBody = () =>

@@ -1,5 +1,6 @@
 import { createHash } from '../helpers/hash';
 import { User, UserInterface } from '../models/User';
+import { sequelize } from '../helpers/db';
 
 const exampleUsers: UserInterface[] = [
   {
@@ -18,15 +19,27 @@ const exampleUsers: UserInterface[] = [
   },
 ];
 
+/**
+ * Helper function for dev environment
+ * adds two mockup users to the db
+ */
 const populateDb = async () => {
   for (const user of exampleUsers) {
     try {
       const hash = await createHash(user.password);
       await User.create({ ...user, password: hash });
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
   }
 };
+
+// just for some shenanigans, described in README
+if (process.env.NODE_POPULATE_DB) {
+  (async () => {
+    await sequelize.sync();
+    await populateDb();
+  })();
+}
 
 export { populateDb, exampleUsers };
