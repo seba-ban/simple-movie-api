@@ -2,6 +2,8 @@
 
 This is a simple movie API. OpenApi spec as `json` and `yaml` is in `api` folder, also available on [swaggerhub](https://app.swaggerhub.com/apis-docs/sebaban/movies/1.0.0-oas3).
 
+`Github Actions` are used for CI/CD pipeline.
+
 ## Run the app
 
 Few environment variables are needed to run the app properly. 
