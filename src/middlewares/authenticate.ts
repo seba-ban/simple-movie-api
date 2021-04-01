@@ -7,8 +7,8 @@ import {
 import { User } from '../models/User';
 
 /**
- *
- * @returns
+ * A factory for a token authenticating middleware
+ * @returns A middleware function
  */
 const authenticate = () => async (
   req: Request,

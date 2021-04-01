@@ -15,9 +15,9 @@ interface TokenPayload {
 
 /**
  * A helper function to validate jwt payload
- * maybe an overkill, but just to be sure
+ * maybe an overkill, but just to be sure we have all the keys we need
  * @param payload
- * @returns
+ * @returns boolean indicating if the payload has all necessary keys
  */
 const validateJwtPayload = (payload: any) => {
   const schema = Joi.object({
@@ -34,7 +34,7 @@ const validateJwtPayload = (payload: any) => {
 /**
  * Verify token using a promise
  * @param token
- * @returns
+ * @returns TokenPayload on successful verification, undefined otherwise
  */
 const verifyToken = (token: string): Promise<TokenPayload | undefined> =>
   new Promise((resolve) =>
@@ -51,9 +51,9 @@ const verifyToken = (token: string): Promise<TokenPayload | undefined> =>
 
 /**
  * A simple helper function to extract the token
- * From authorization header
- * @param req
- * @returns
+ * from the authorization header
+ * @param req Express Request object
+ * @returns token string or empty string
  */
 const extractToken = (req: Request) =>
   req.headers['authorization']?.replace('Bearer', '').trim() || '';

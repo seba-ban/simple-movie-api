@@ -12,11 +12,17 @@ const sequelize = new Sequelize(
   `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:5432/${DB}`
 );
 
+/**
+ * Ensures there's a connection with a db
+ */
 const dbConnect = async () => {
   await sequelize.authenticate();
   await sequelize.sync();
 };
 
+/**
+ * Closes db connection
+ */
 const dbDisconnect = async () => {
   await sequelize.close();
 };

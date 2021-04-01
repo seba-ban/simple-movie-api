@@ -9,6 +9,7 @@ import moment from 'moment';
 
 const router = express.Router();
 
+// Added to have properly typed user on the req.body
 declare module 'express-serve-static-core' {
   interface Request {
     user?: User;
@@ -18,7 +19,9 @@ declare module 'express-serve-static-core' {
 router.get('/', authenticate(), async (req: Request, res) => {
   const user = req.user;
 
-  if (!user) throw new Error();
+  // This is added just to ensure Typescript that user is not undefined
+  // the authenticate middleware makes sure user is set now on req
+  if (!user) return res.sendStatus(500);
 
   const movies = await Movie.findAll({ where: { UserId: user.getKey('id') } });
   const response = movies.map((movie) => movie.extractInterfaceKeys());
@@ -26,6 +29,10 @@ router.get('/', authenticate(), async (req: Request, res) => {
   res.json(response);
 });
 
+/**
+ * A small middleware to make sure we have the proper body object
+ * @returns middleware
+ */
 const checkBody = () =>
   celebrate({
     [Segments.BODY]: Joi.object({
@@ -41,7 +48,8 @@ router.post(
   async (req: Request<{}, {}, { title: string }>, res) => {
     const user = req.user;
 
-    if (!user) throw new Error();
+    // same comment as in get path
+    if (!user) return res.sendStatus(500);
 
     const userRole = user.getKey('role');
 
@@ -59,6 +67,7 @@ router.post(
         },
       });
 
+      // going off limits is a no-no
       if (movies.length >= monthlyLimit)
         return res
           .status(403)

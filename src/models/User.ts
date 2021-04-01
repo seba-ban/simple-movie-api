@@ -10,6 +10,11 @@ interface UserInterface {
 }
 
 class User extends Model {
+  /**
+   * Just added quickly to have Typescript support for available keys...
+   * @param key
+   * @returns underlying data for the key
+   */
   getKey<K extends keyof UserInterface>(key: K): UserInterface[K] {
     return super.getDataValue(key);
   }

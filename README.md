@@ -5,11 +5,11 @@ This is a simple movie API. OpenApi spec as `json` and `yaml` is in `api` folder
 ## Run the app
 
 Few environment variables are needed to run the app properly. 
-They are taken from `.env.dev` file in the root directory. There's a `.env.dev.example` file listing all the variables needed. All are set to defaults I was using during dev, except for the API key for https://omdbapi.com/ (following the rule not to add private keys to public repositories).
+They are taken from `.env.dev` file in the root directory. There's a `.env.dev.example` file listing all the variables needed. All are set to defaults I was using during dev, except for the API key for https://omdbapi.com/ (following the rule to not add private keys to public repositories).
 
 Long story short: 
-- paste a valid `omdbapi` key to  `.env.dev.example`
 - rename `.env.dev.example` to `.env.dev`
+- paste a valid `omdbapi` key to  `.env.dev`
 
 ### `npm` scripts
 
@@ -17,11 +17,38 @@ Long story short:
 
 `npm test` - used to run local tests, it uses a short shell script which calls `docker-compose`
 
----
+## Dockerfiles
 
-`Dockerfile.dev` is used to make a development image, `Dockerfile` can be used to build a more production ready image with typescript compiled to javascript, without source artifacts, etc. 
+`Dockerfile.dev` is used to make a development image and is used by `npm run dev` script. `Dockerfile`, on the other hand, can be used to build a more production ready image with typescript compiled to javascript, without source files and dev dependencies. 
+```
+docker image build -t simple-movie-api:1.0.0 .
+```
+The problem is we need to populate the database, as we even don't have a registration endpoint for users. Assuming you have a `.env` file, you can run:
 
----
+```
+docker container run --name some-postgres --env-file .env -p 5432:5432 postgres
+```
+
+```
+POSTGRES_USER=movies POSTGRES_PASSWORD=password DB_HOST=localhost DB=movies NODE_POPULATE_DB=true ts-node src/helpers/populateDb.ts
+```
+After that you can run:
+
+```
+docker container run -p 3000:3000 --env-file .env --name simple-movie-api simple-movie-api:1.0.0
+```
+
+You should be able now to `curl` `localhost:3000` (or any other port you specified):
+
+```
+curl --location --request POST 'localhost:3000/auth' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "basic-thomas",
+    "password": "sR-_pcoow-27-6PAwCD8"
+}'
+```
+
 ---
 
 # Original Instructions
